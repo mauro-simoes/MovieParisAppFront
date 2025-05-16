@@ -1,53 +1,38 @@
-import { LoginRequest, JwtResponse, UserInfoResponse } from '../types/auth';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+import { LoginRequest, UserInfoResponse } from '../types/auth';
+import api from '../../app/utils/api';
 
 export class AuthService {
-  static async login(credentials: LoginRequest): Promise<JwtResponse> {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
-
-    return response.json();
-  }
-
-  static async getCurrentUser(): Promise<UserInfoResponse> {
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      throw new Error('No token found');
-    }
-
-    const response = await fetch(`${API_URL}/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to get user info');
-    }
-
-    return response.json();
-  }
+  private static TOKEN_KEY = 'auth_token';
 
   static setToken(token: string): void {
-    localStorage.setItem('token', token);
+    localStorage.setItem(this.TOKEN_KEY, token);
   }
 
   static getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   static removeToken(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem(this.TOKEN_KEY);
+  }
+
+  static async login(credentials: LoginRequest): Promise<{ token: string }> {
+    try {
+      const response = await api.post('/auth/login', credentials);
+      return response.data;
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw new Error('Login failed');
+    }
+  }
+
+  static async getCurrentUser(): Promise<UserInfoResponse> {
+    try {
+      const response = await api.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get current user:', error);
+      throw new Error('Failed to get current user');
+    }
   }
 } 

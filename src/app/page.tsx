@@ -80,31 +80,33 @@ export default function Home() {
             <div className="flex gap-6">
               {movies.map((movie) => (
                 <div key={movie.id} className="flex-[0_0_300px] min-w-0">
-                  <Card className="overflow-hidden h-full">
-                    <div className="relative h-[400px]">
-                      <Image
-                        src={movie.thumbnail}
-                        alt={movie.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold mb-2">{movie.title}</h3>
-                      <p className="text-muted-foreground text-sm">
-                        <span className="font-medium">Réalisateur:</span> {movie.director}
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        <span className="font-medium">Langue:</span> {movie.language}
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        <span className="font-medium">Durée:</span> {movie.durationMinutes} minutes
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        <span className="font-medium">Date de sortie:</span> {new Date(movie.releaseDate).toLocaleDateString('fr-FR')}
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Link href={`/movies/${movie.id}`}>
+                    <Card className="overflow-hidden h-full cursor-pointer transition-transform hover:scale-105">
+                      <div className="relative h-[400px]">
+                        <Image
+                          src={movie.thumbnail}
+                          alt={movie.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold mb-2">{movie.title}</h3>
+                        <p className="text-muted-foreground text-sm">
+                          <span className="font-medium">Réalisateur:</span> {movie.director}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          <span className="font-medium">Langue:</span> {movie.language}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          <span className="font-medium">Durée:</span> {movie.durationMinutes} minutes
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                          <span className="font-medium">Date de sortie:</span> {new Date(movie.releaseDate).toLocaleDateString('fr-FR')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </div>
               ))}
             </div>

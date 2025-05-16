@@ -6,18 +6,25 @@ export function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
+      console.log('Attempting login with username:', username);
       await login({ username, password });
-      router.push('/dashboard'); // Redirect to dashboard after successful login
+      console.log('Login successful, redirecting to dashboard');
+      router.push('/dashboard');
     } catch (err) {
-      setError('Invalid username or password');
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Invalid username or password');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -35,6 +42,7 @@ export function LoginForm() {
             onChange={(e) => setUsername(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             required
+            disabled={isLoading}
           />
         </div>
 
@@ -49,6 +57,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             required
+            disabled={isLoading}
           />
         </div>
 
@@ -58,9 +67,10 @@ export function LoginForm() {
 
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          disabled={isLoading}
         >
-          Sign in
+          {isLoading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
     </div>

@@ -1,6 +1,8 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AuthState, LoginRequest, UserInfoResponse } from '../types/auth';
-import { AuthService } from '../services/auth.service';
+import { AuthState, LoginRequest } from '../types/auth';
+import { UserService } from '../../app/services/UserService';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginRequest) => Promise<void>;
@@ -12,7 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
-    user: null,
+    username: null,
     token: null,
     isAuthenticated: false,
   });
@@ -20,17 +22,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = AuthService.getToken();
+      const token = localStorage.getItem('auth_token');
       if (token) {
         try {
-          const user = await AuthService.getCurrentUser();
+          const response = await UserService.getCurrentUser();
           setState({
-            user,
+            username: response.username,
             token,
             isAuthenticated: true,
           });
         } catch (error) {
-          AuthService.removeToken();
+          localStorage.removeItem('auth_token');
         }
       }
       setLoading(false);
@@ -41,24 +43,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (credentials: LoginRequest) => {
     try {
-      const response = await AuthService.login(credentials);
-      AuthService.setToken(response.token);
-      const user = await AuthService.getCurrentUser();
-      
-      setState({
-        user,
-        token: response.token,
-        isAuthenticated: true,
-      });
+      const response = await UserService.authenticate(credentials.username, credentials.password);
+      if (response) {
+        localStorage.setItem('auth_token', response.token);
+        setState({
+          username: response.username,
+          token: response.token,
+          isAuthenticated: true,
+        });
+      } else {
+        throw new Error('Login failed');
+      }
     } catch (error) {
       throw new Error('Login failed');
     }
   };
 
   const logout = () => {
-    AuthService.removeToken();
+    localStorage.removeItem('auth_token');
     setState({
-      user: null,
+      username: null,
       token: null,
       isAuthenticated: false,
     });
