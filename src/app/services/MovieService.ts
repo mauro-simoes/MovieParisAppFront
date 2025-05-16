@@ -11,7 +11,7 @@ const mockMovies: Movie[] = [
   {
     id: 1,
     title: 'Inception',
-    duration: 148,
+    durationMinutes: 148,
     language: 'English',
     director: 'Christopher Nolan',
     mainActors: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt'],
@@ -21,11 +21,12 @@ const mockMovies: Movie[] = [
     days: ['MONDAY', 'WEDNESDAY', 'FRIDAY'],
     time: '20:00',
     theatre: mockTheatres[0],
+    releaseDate: '2024-06-01'
   },
   {
     id: 2,
     title: 'Amélie',
-    duration: 122,
+    durationMinutes: 122,
     language: 'French',
     director: 'Jean-Pierre Jeunet',
     mainActors: ['Audrey Tautou', 'Mathieu Kassovitz'],
@@ -35,23 +36,34 @@ const mockMovies: Movie[] = [
     days: ['TUESDAY', 'THURSDAY', 'SATURDAY'],
     time: '18:00',
     theatre: mockTheatres[1],
+    releaseDate: '2024-06-05'
   },
 ];
 
 const USE_MOCK = true; // Set to false to use real API when ready
 
-export class MovieService {
-  static async getMoviesByCity(city: string): Promise<Movie[]> {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+export const movieService = {
+  async getAllMovies(): Promise<Movie[]> {
+    const response = await fetch(`${API_BASE_URL}/api/movies`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch movies');
+    }
+    return response.json();
+  },
+
+  async getMoviesByCity(city: string): Promise<Movie[]> {
     if (USE_MOCK) {
-      return mockMovies.filter((m) => m.theatre.city.toLowerCase() === city.toLowerCase());
+      return mockMovies.filter((m) => m.theatre?.city.toLowerCase() === city.toLowerCase());
     }
     // Example API call (to be implemented)
     // const response = await api.get(`/movies?city=${city}`);
     // return response.data;
     return [];
-  }
+  },
 
-  static async getMovie(id: number): Promise<Movie | undefined> {
+  async getMovie(id: number): Promise<Movie | undefined> {
     if (USE_MOCK) {
       return mockMovies.find((m) => m.id === id);
     }
@@ -59,9 +71,9 @@ export class MovieService {
     // const response = await api.get(`/movies/${id}`);
     // return response.data;
     return undefined;
-  }
+  },
 
-  static async addMovie(movie: Movie): Promise<boolean> {
+  async addMovie(movie: Movie): Promise<boolean> {
     if (USE_MOCK) {
       mockMovies.push(movie);
       return true;
@@ -70,4 +82,4 @@ export class MovieService {
     // await api.post('/movies', movie);
     return false;
   }
-} 
+}; 
