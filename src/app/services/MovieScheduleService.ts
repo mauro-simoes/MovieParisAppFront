@@ -2,6 +2,11 @@ import { MovieSchedule } from '../models/MovieSchedule';
 import api from '../utils/api';
 
 export const movieScheduleService = {
+  async getAllSchedules(): Promise<MovieSchedule[]> {
+    const response = await api.get('/schedules');
+    return response.data;
+  },
+
   async getSchedulesByMovieId(movieId: number): Promise<MovieSchedule[]> {
     const response = await api.get(`/schedules/get/${movieId}`);
     return response.data;

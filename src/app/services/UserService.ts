@@ -1,6 +1,13 @@
 import { User } from '../models/User';
 import api from '../utils/api';
 
+interface UserResponse {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
 export class UserService {
   static async authenticate(username: string, password: string): Promise<{ username: string; token: string } | null> {
     try {
@@ -22,7 +29,7 @@ export class UserService {
     }
   }
 
-  static async getUsers(): Promise<User[]> {
+  static async getUsers(): Promise<UserResponse[]> {
     try {
       const response = await api.get('/users');
       return response.data;

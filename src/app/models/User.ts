@@ -4,6 +4,6 @@ export interface User {
   id: number;
   username: string;
   passwordHash: string;
-  role: 'public' | 'admin';
+  role: 'ROLE_ADMIN' | 'ROLE_CINEMA_OWNER';
   theatres: Theatre[];
 } 

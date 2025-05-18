@@ -21,4 +21,23 @@ export class TheatreService {
       return [];
     }
   }
+
+  static async createTheatre(theatre: Omit<Theatre, 'id'>): Promise<Theatre> {
+    try {
+      const response = await api.post('/theatres', theatre);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create theatre:', error);
+      throw new Error('Failed to create theatre');
+    }
+  }
+
+  static async deleteTheatre(id: number): Promise<void> {
+    try {
+      await api.delete(`/theatres/${id}`);
+    } catch (error) {
+      console.error(`Failed to delete theatre ${id}:`, error);
+      throw new Error('Failed to delete theatre');
+    }
+  }
 } 

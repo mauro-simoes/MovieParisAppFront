@@ -31,12 +31,6 @@ export default function Navigation() {
                   <span className="absolute inset-0 bg-primary/10 rounded-md scale-0 group-hover:scale-100 transition-transform duration-200" />
                 </Link>
               </Button>
-              <Button variant="ghost" className="relative group" asChild>
-                <Link href="/series">
-                  <span className="relative z-10">Séries</span>
-                  <span className="absolute inset-0 bg-primary/10 rounded-md scale-0 group-hover:scale-100 transition-transform duration-200" />
-                </Link>
-              </Button>
               <Button variant="default" className="ml-2" asChild>
                 <Link href="/login">Connexion</Link>
               </Button>
